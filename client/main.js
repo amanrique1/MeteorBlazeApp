@@ -1,22 +1,39 @@
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
+import Events from '../collections';
 
 import './main.html';
 
-Template.hello.onCreated(function helloOnCreated() {
-  // counter starts at 0
-  this.counter = new ReactiveVar(0);
-});
-
-Template.hello.helpers({
-  counter() {
-    return Template.instance().counter.get();
+Template.getFormData.helpers({
+  eventos: () => {
+      const info = Events.find({});
+      for (let i of info) {
+          console.log(`Info: ${i}`);
+      }        
+      return info;
   },
 });
+Template.form.events({
+  'submit form': (event) => {
+      event.preventDefault();
+      const target = event.target;
 
-Template.hello.events({
-  'click button'(event, instance) {
-    // increment the counter when button is clicked
-    instance.counter.set(instance.counter.get() + 1);
-  },
+      const nombre = target.nombre.value;
+      const descripcion = target.descripcion.value;
+      const encargado = target.encargado.value;
+      const inicio = target.inicio.value;
+      const fin = target.fin.value;
+      const ubicacion = target.ubicacion.value;
+
+      let evento = {            
+          nombre: nombre,
+          descripcion: descripcion,
+          encargado: encargado,
+          inicio: inicio,
+          fin: fin,
+          ubicacion: ubicacion
+      };
+
+      Events.insert(evento);
+  }
 });
